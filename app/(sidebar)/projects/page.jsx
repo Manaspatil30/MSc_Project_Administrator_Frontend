@@ -1,4 +1,5 @@
 "use client";
+import ProjectStepper from "@components/ProjectStepper";
 import ProjectTable from "@components/ProjectTable";
 import {
   Box,
@@ -21,7 +22,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "auto",
+  width: "65%",
   height: "auto",
   bgcolor: "background.paper",
   borderRadius: "15px",
@@ -108,14 +109,12 @@ const page = () => {
   return (
     <Container>
       <Box>
-        {Cookies.get('user_role') == "ACADEMIC" || "MOD_OWNER" ? 
+        {Cookies.get('user_role') === 'ACADEMIC' && 
         <Button variant="contained" onClick={handleOpen}>Add Project</Button>
-        :
-        <div></div>
         }
       </Box>
       <ProjectTable />
-      <Modal
+      {/* <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
@@ -199,7 +198,16 @@ const page = () => {
             Add Project
           </Button>
         </Box>
-      </Modal>
+      </Modal> */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+          <Box sx={style}>
+            <ProjectStepper/>
+          </Box>
+        </Modal>
     </Container>
   );
 };

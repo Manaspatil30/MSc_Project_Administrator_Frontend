@@ -2,6 +2,7 @@
 import { AppBar, Avatar, Box, CssBaseline, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
 import Link from 'next/link';
 import React from 'react'
+import Cookies from 'js-cookie';
 
 const settings = ['Profile', 'Logout']; 
 
@@ -15,6 +16,12 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleLogout = () => {
+    Cookies.remove('token');
+    Cookies.remove('userId');
+    Cookies.remove('user_role');
+  }
 
   return (
     <Box display={'flex'} width={'auto%'}>
@@ -54,7 +61,7 @@ const Navbar = () => {
                 <MenuItem component={Link} href='/profile' onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
-                <MenuItem onClick={handleCloseUserMenu}>
+                <MenuItem component={Link} href='/login' onClick={() => {handleCloseUserMenu(); handleLogout();}}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
             </Menu>
