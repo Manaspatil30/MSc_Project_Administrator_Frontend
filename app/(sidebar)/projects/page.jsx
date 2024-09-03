@@ -46,6 +46,13 @@ const page = () => {
   const handleClose = () => setOpen(false);
   const [inputList, setInputList] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isSupervisor, setIsSupervisor] = useState(false);
+
+  useEffect(() => {
+    if (Cookies.get('user_role') === 'ACADEMIC') {
+      setIsSupervisor(true);
+    }
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -109,8 +116,8 @@ const page = () => {
   return (
     <Container>
       <Box>
-        {Cookies.get('user_role') === 'ACADEMIC' && 
-        <Button variant="contained" onClick={handleOpen}>Add Project</Button>
+        {isSupervisor && 
+        <Button variant="contained" href="/addproject">Add Project</Button>
         }
       </Box>
       <ProjectTable />
@@ -207,7 +214,7 @@ const page = () => {
           <Box sx={style}>
             <ProjectStepper/>
           </Box>
-        </Modal>
+      </Modal>
     </Container>
   );
 };

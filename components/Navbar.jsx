@@ -1,13 +1,14 @@
 "use client"
 import { AppBar, Avatar, Box, CssBaseline, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
 import Link from 'next/link';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 
 const settings = ['Profile', 'Logout']; 
 
 const Navbar = () => {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -23,6 +24,12 @@ const Navbar = () => {
     Cookies.remove('user_role');
   }
 
+  useEffect(() => {
+    if (Cookies.get('token')) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   return (
     <Box display={'flex'} width={'auto%'}>
         <CssBaseline />
@@ -31,17 +38,20 @@ const Navbar = () => {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          <Typography variant="h6">
-            Navbar
-          </Typography>
+          {/* <Typography variant="h6">
+            MSc Project Administrator
+          </Typography> */}
           <Box sx={{ flexGrow: 0, 
             display:'flex', justifyContent:'end', width:'100%' 
             }}>
+              {
+                isAuthenticated && 
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar />
               </IconButton>
             </Tooltip>
+               }
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
