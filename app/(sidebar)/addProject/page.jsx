@@ -1,9 +1,11 @@
 "use client"
-import { Box, Button, Chip, FormControl, Grid, InputLabel, MenuItem, OutlinedInput, Select, TextField, useTheme } from '@mui/material'
+import { Box, Button, Checkbox, Chip, FormControl, Grid, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField, useTheme } from '@mui/material'
 import axiosInstance from '@utils/axios';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -62,9 +64,12 @@ const page = () => {
   const [inputList, setInputList] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const theme = useTheme();
+  const [tags, setTags] = useState();
   const [tagName, setTagName] = useState([]);
   const [supervisors, setSupervisors] = useState();
   const [asoSupName, setAsoSupName] = useState([]);
+  const [programes, setProgrames] = useState();
+  const [programeName, setProgrameName] = useState([]);
 
   //formDataStates
   const [title, setTitle] = useState("");
@@ -136,6 +141,16 @@ const page = () => {
     );
   };
 
+  const handleProgrameChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setProgrameName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
+
   const handleAsoSupervisorChange = (event) => {
     const {
       target: { value },
@@ -145,10 +160,6 @@ const page = () => {
       typeof value === 'string' ? value.split(',') : value,
     );
   };
-
-  console.log("asoSupName", asoSupName);
-
-  console.log("Tags",tagName);
 
   const handleInputChange = (event, index) => {
     const { value } = event.target;
@@ -177,17 +188,26 @@ const page = () => {
 
   useEffect(()=>{
     axiosInstance.get("/api/v1/users/supervisor?role=ACADEMIC").then((data)=>{setSupervisors(data.data);})
+    axiosInstance.get("api/v1/programs").then((data)=>{setProgrames(data.data)})
+    axiosInstance.get("/api/v1/projects/tags").then((data) => {setTags(data.data)})
   },[])
 
+  console.log("programeName", programeName);
+  console.log("asoSupName", asoSupName);
+  console.log("Tags",tagName);
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
+    const programIds = programeName.map(program => program.programId)
+    const associateSupervisorIds = asoSupName.map(sup => sup.userId)
+
     const formData = {
       title: title,
       description:description,
       supervisor: Cookies.get('userId'),
-      associateSupervisor: asoSupName,
-      program: program,
+      associateSupervisorIds: associateSupervisorIds,
+      programeIds: programIds,
       status: "Available",
       questions: inputList,
       prerequisite: prerequisite,
@@ -197,13 +217,29 @@ const page = () => {
       tags: tagName,
     };
 
-    axiosInstance.post('api/v1/projects/create', formData)
-    .then(()=>{toast.success("project added successfully")})
-    .then(()=>{handleNext})
+    axiosInstance.post('api/v1/projects/create', formData).then(() => {
+      toast.success("Project added successfully");
+    })
+    .catch((error) => {
+      toast.error("Error")
+    });
   };
 
   return (
     <form onSubmit={handleSubmit}>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
           {/* Steps */}
           <Grid
             container
@@ -237,26 +273,45 @@ const page = () => {
                 </Grid>
                 {/* Programe  */}
                 <Grid item xs={5}>
-                  <label style={{ fontWeight: "bold" }}>Programe</label>
-                  <FormControl size='small' fullWidth margin="dense">
+                <label style={{ fontWeight: "bold" }}>
+                    Programes (Suitable For)
+                  </label>
+                  <FormControl size='small' fullWidth margin='dense'>
                     <Select
-                      name="program"
-                      margin="dense"
-                      // @ts-ignore
-                      onChange={(event) => {setprogram(event.target.value)}}
+                      labelId="demo-multiple-chip-label"
+                      id="demo-multiple-chip"
+                      multiple
+                      value={programeName}
+                      onChange={handleProgrameChange}
+                      input={
+                        <OutlinedInput id="select-multiple-chip" />
+                      }
+                      renderValue={(selected) => (
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
+                          {selected.map((value) => (
+                            <Chip key={value} label={value.title} />
+                          ))}
+                        </Box>
+                      )}
+                      MenuProps={MenuProps}
                     >
-                      <MenuItem value={"MSc Computer Science"}>
-                        MSc Computer Science
-                      </MenuItem>
-                      <MenuItem value={"MSc Artificial Inteligence"}>
-                        MSc Artificial Inteligence
-                      </MenuItem>
-                      <MenuItem value={"MSc AI with Business"}>
-                        MSc AI with Business
-                      </MenuItem>
+                      { programes &&
+                      // @ts-ignore
+                      programes.map((name) => (
+                        <MenuItem
+                          key={name.programId}
+                          value={name}
+                          style={getStyles(name, programeName, theme)}
+                        >
+                          <Checkbox checked={programeName.indexOf(name) > -1}/>
+                            <ListItemText primary={name.title}/>
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid> 
                 {/* Quota */}
                 <Grid item xs={3}>
                   <label style={{ fontWeight: "bold" }}>Quota</label>
@@ -288,7 +343,7 @@ const page = () => {
                           sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
                         >
                           {selected.map((value) => (
-                            <Chip key={value} label={value} />
+                            <Chip key={value} label={value.firstname + " " + value.lastname} />
                           ))}
                         </Box>
                       )}
@@ -298,10 +353,11 @@ const page = () => {
                       // @ts-ignore
                       .map((sup) => (
                         <MenuItem
-                          value={sup.userId}
-                          style={getStyles(sup.firstname, tagName, theme)}
+                          value={sup}
+                          style={getStyles(sup, tagName, theme)}
                         >
-                          {sup.firstname + " " + sup.lastname}
+                          <Checkbox checked={asoSupName.indexOf(sup) > -1}/>
+                          <ListItemText primary={sup.firstname + " " + sup.lastname}/>
                         </MenuItem>
                       ))}
                     </Select>
@@ -359,19 +415,21 @@ const page = () => {
                       )}
                       MenuProps={MenuProps}
                     >
-                      {names.map((name) => (
+                      {tags && tags.
+// @ts-ignore
+                      map((name) => (
                         <MenuItem
-                          key={name}
-                          value={name}
+                          key={name.id}
+                          value={name.name}
                           style={getStyles(name, tagName, theme)}
                         >
-                          {name}
+                          <Checkbox checked={tagName.indexOf(name.name) > -1}/>
+                          <ListItemText primary={name.name}/>
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                </Grid>
-                
+                </Grid>   
                 {/* Questions */}
               <Grid item xs={12}>
               <label style={{ fontWeight: "bold" }}>Questions</label>

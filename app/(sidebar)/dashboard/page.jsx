@@ -1,9 +1,13 @@
 "use client"
 import React from 'react'
+import { Bounce, toast, ToastContainer } from 'react-toastify'
 
 const page = () => {
+  const handleToast = () => {toast.success("Success")}
   return (
-    <div>Dashboard</div>
+    <>
+    <button onClick={handleToast}>Dashboard</button>
+    </>
   )
 }
 

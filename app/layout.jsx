@@ -7,6 +7,7 @@ import Navbar from "@components/Navbar";
 import axios from "axios";
 import { cookies } from "next/headers";
 import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata = {
   title: "MSc Project Administrator",
@@ -19,6 +20,7 @@ const RootLayout = ({ children }) => {
     <html lang="en">
       <body>
         <ThemeProvider theme={theme}>
+          <Navbar />
           <ToastContainer
             position="top-right"
             autoClose={5000}
@@ -32,7 +34,6 @@ const RootLayout = ({ children }) => {
             theme="light"
             transition={Bounce}
           />
-          <Navbar />
           <div>{children}</div>
         </ThemeProvider>
       </body>

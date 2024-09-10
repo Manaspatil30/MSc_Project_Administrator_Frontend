@@ -1,5 +1,6 @@
 import SideNavbar from '@components/SideNavbar'
 import React from 'react'
+import { Bounce, ToastContainer } from 'react-toastify'
 
 const layout = ({children}) => {
   return (

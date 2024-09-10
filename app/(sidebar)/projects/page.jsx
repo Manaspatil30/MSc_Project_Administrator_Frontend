@@ -54,28 +54,6 @@ const page = () => {
     }
   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    axiosInstance.post("api/v1/projects/create", {
-        title : data.get('title'),
-        description : data.get('description'),
-        course : data.get('course'),
-        status:"Available",
-        supervisor : Cookies.get('userId'),
-        questions : inputList
-    }).then(() => {alert('Project Added Successfully')})
-    .then(()=>{handleClose;})
-    console.log({
-        title : data.get('title'),
-        description : data.get('description'),
-        course : data.get('course'),
-        status:"Available",
-        supervisor : Cookies.get('userId'),
-        questions : inputList
-    })
-  };
-
   useEffect(() => {
     if(inputList.length == 0){
         setIsDisabled(false);
@@ -86,29 +64,6 @@ const page = () => {
         : setIsDisabled(false);
     }
   });
-
-  const handleListAdd = () => {
-    setInputList([
-      ...inputList,
-      {
-        questionText: "",
-      },
-    ]);
-  };
-
-  const handleInputChange = (event, index) => {
-    const { value } = event.target;
-    const newInputList = [...inputList];
-    newInputList[index].questionText = value;
-    newInputList[index].input_rank = index + 1;
-    setInputList(newInputList);
-  };
-
-  const handleRemoveItem = (index) => {
-    const newList = [...inputList];
-    newList.splice(index, 1);
-    setInputList(newList);
-  };
 
   console.log(inputList);
   console.log("User Role", Cookies.get('user_role'))
@@ -121,91 +76,6 @@ const page = () => {
         }
       </Box>
       <ProjectTable />
-      {/* <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style} component={"form"} onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            multiline
-            maxRows={2}
-            id="outlined-basic"
-            label="Project Title"
-            name="title"
-            variant="outlined"
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            multiline
-            maxRows={6}
-            id="outlined-basic"
-            label="Description"
-            name="description"
-            variant="outlined"
-            margin="normal"
-          />
-
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Course</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="course"
-              label="Course"
-            >
-              <MenuItem value={'MSc Computer Science'}>MSc Computer Science</MenuItem>
-              <MenuItem value={'MSc Artificial Inteligence'}>MSc Artificial Inteligence</MenuItem>
-              <MenuItem value={'MSc AI with Business'}>MSc AI with Business</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            justifyContent={"center"}
-            alignItems={"center"}
-          >
-            {inputList.length > 0
-              ? inputList.map((input, index) => (
-                  <div key={index} style={inputStyles}>
-                    <TextField
-                      id="outlined-basic"
-                      label={`Question ${index + 1}`}
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                      onChange={(event) => handleInputChange(event, index)}
-                    />
-                    <button
-                      style={btnStyle}
-                      onClick={() => handleRemoveItem(index)}
-                    >
-                      <span role="img" aria-label="x emoji">
-                        ❌
-                      </span>
-                    </button>
-                  </div>
-                ))
-              : "No Question Added"}
-            <Button
-              variant="contained"
-              style={btnStyle}
-              onClick={handleListAdd}
-              disabled={isDisabled}
-            >
-              Add Question
-            </Button>
-          </Box>
-
-          <Button type="submit" variant="contained">
-            Add Project
-          </Button>
-        </Box>
-      </Modal> */}
       <Modal
         open={open}
         onClose={handleClose}

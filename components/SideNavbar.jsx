@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import Cookies from "js-cookie";
+import { useState } from "react";
 
 const drawerWidth = 200;
 
@@ -40,6 +42,7 @@ const list = [
 ]
 
 const SideNavbar = ({children}) => {
+  const [isSupervisor, setIsSupervisor] = useState(Cookies.get('user_role'));
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
@@ -66,6 +69,16 @@ const SideNavbar = ({children}) => {
                 </ListItemButton>
               </ListItem>
             ))}
+            {/* {isSupervisor == 'ACADEMIC' && 
+            <ListItem disablePadding>
+              <ListItemButton href="/addproject">
+                <ListItemIcon>
+                  <InboxIcon/>
+                </ListItemIcon>
+                <ListItemText primary={'Add project'} />
+              </ListItemButton>
+            </ListItem>
+            } */}
           </List>
           {/* <Divider />
           <List>
