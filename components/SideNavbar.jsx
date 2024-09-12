@@ -16,33 +16,65 @@ import {
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 200;
 
-const list = [
-  {
-    title : "Dashboard",
-    href : "/dashboard"
-  },
-  {
-    title : "Projects",
-    href : "/projects"
-  },
-  {
-    title : "Sessions",
-    href : "/session"
-  },
-  {
-    title : "Feedback",
-    href : "/feedback"
-  },
-  
-
-]
+// const list = 
+// Cookies.get('user_role') == 'ACADEMIC' ?
+// [
+//   {
+//     title : "Dashboard",
+//     href : "/dashboard"
+//   },
+//   {
+//     title : "Projects",
+//     href : "/projects"
+//   },
+// ] : [
+//   {
+//     title : "Dashboard",
+//     href : "/dashboard"
+//   },
+//   {
+//     title : "Projects",
+//     href : "/projects"
+//   },
+//   {
+//     title : "Sessions",
+//     href : "/session"
+//   },
+//   {
+//     title : "Feedback",
+//     href : "/feedback"
+//   },
+// ]
 
 const SideNavbar = ({children}) => {
   const [isSupervisor, setIsSupervisor] = useState(Cookies.get('user_role'));
+  const [userRole, setUserRole] = useState(null); // Set initial value to null
+  const [list, setList] = useState([]); // Create a state for the list
+
+  useEffect(() => {
+    const role = Cookies.get('user_role');
+    setUserRole(role);
+
+    // Generate list based on role after the component mounts
+    if (role === 'MOD_OWNER') {
+      setList([
+        { title: "Dashboard", href: "/mod_ownerDashboard" },
+        { title: "Projects", href: "/projects" }
+      ]);
+    } else {
+      setList([
+        { title: "Dashboard", href: "/dashboard" },
+        { title: "Projects", href: "/projects" },
+        { title: "Sessions", href: "/session" },
+        { title: "Feedback", href: "/feedback" }
+      ]);
+    }
+  }, []);
+  
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
@@ -69,30 +101,7 @@ const SideNavbar = ({children}) => {
                 </ListItemButton>
               </ListItem>
             ))}
-            {/* {isSupervisor == 'ACADEMIC' && 
-            <ListItem disablePadding>
-              <ListItemButton href="/addproject">
-                <ListItemIcon>
-                  <InboxIcon/>
-                </ListItemIcon>
-                <ListItemText primary={'Add project'} />
-              </ListItemButton>
-            </ListItem>
-            } */}
           </List>
-          {/* <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List> */}
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

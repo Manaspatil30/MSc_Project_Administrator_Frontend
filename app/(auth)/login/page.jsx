@@ -30,7 +30,13 @@ const Login = () => {
       Cookies.set('userId', res.data.user.userId);
       Cookies.set('user_role', res.data.user.role);
       console.log('Login successful, redirecting...'); // Debugging line
-    }).then(()=>router.push('/dashboard'))
+    }).then(()=>{
+      if(Cookies.get('user_role') == 'MOD_OWNER'){
+        router.push('/mod_ownerDashboard')
+      } else {
+        router.push('/dashboard')
+      }
+    })
   };
 
   return (

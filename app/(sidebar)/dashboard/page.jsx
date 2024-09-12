@@ -1,5 +1,7 @@
 "use client"
-import React from 'react'
+import Cookies from 'js-cookie'
+import router from 'next/router'
+import React, { useEffect } from 'react'
 import { Bounce, toast, ToastContainer } from 'react-toastify'
 
 const page = () => {
