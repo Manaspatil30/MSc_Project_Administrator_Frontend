@@ -57,7 +57,13 @@ const ProjectTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const userRole = Cookies.get('user_role');
+  const [userRole, setUserRole] = useState();
+
+  useEffect(()=>{
+    // @ts-ignore
+    setUserRole(Cookies.get('user_role'))
+  },[])
+  
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -338,7 +344,8 @@ const ProjectTable = () => {
     </Paper>
 
     {
-      Cookies.get('user_role') == 'STUDENT' &&
+      userRole == 'STUDENT' &&
+      <>
       <Button
         variant="contained"
         onClick={toggleDrawer(!drawerOpen)}
@@ -350,10 +357,8 @@ const ProjectTable = () => {
           zIndex: 1200 }} // Fixed position for the toggle button
       >
         {drawerOpen ? 'Close Preferences' : 'Open Preferences'}
-      </Button>}
-
-    {/* Selected Projects Section */}
-    <Drawer
+      </Button>
+      <Drawer
         anchor="right"
         open={drawerOpen}
         onClose={toggleDrawer(false)}
@@ -400,6 +405,8 @@ const ProjectTable = () => {
         </Button>
       </Box>
       </Drawer>
+      </>
+  }
     </Box>
   )
 }

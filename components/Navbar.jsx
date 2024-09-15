@@ -38,9 +38,9 @@ const Navbar = () => {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          {/* <Typography variant="h6">
+          <Typography fontWeight={'700'} width={'100%'}>
             MSc Project Administrator
-          </Typography> */}
+          </Typography>
           <Box sx={{ flexGrow: 0, 
             display:'flex', justifyContent:'end', width:'100%' 
             }}>

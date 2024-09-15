@@ -79,6 +79,7 @@ const Login = () => {
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"
+          sx={{display:'none'}}
         />
         <Button
           type="submit"
@@ -88,7 +89,7 @@ const Login = () => {
         >
           Sign In
         </Button>
-        <Grid container>
+        {/* <Grid container>
           <Grid item xs>
             <Link href="#" variant="body2">
               Forgot password?
@@ -99,7 +100,7 @@ const Login = () => {
               {"Don't have an account? Sign Up"}
             </Link>
           </Grid>
-        </Grid>
+        </Grid> */}
       </Box>
     </Box>
   </Container>

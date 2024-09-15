@@ -47,8 +47,10 @@ const page = () => {
   const [inputList, setInputList] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isSupervisor, setIsSupervisor] = useState(false);
+  const [isClient, setIsClient] = useState(false); // New state for client-side rendering
 
   useEffect(() => {
+    setIsClient(true); // Set to true once on the client
     if (Cookies.get('user_role') === 'ACADEMIC') {
       setIsSupervisor(true);
     }
@@ -71,20 +73,11 @@ const page = () => {
   return (
     <Container>
       <Box>
-        {isSupervisor && 
+        {isClient && isSupervisor && 
         <Button variant="contained" href="/addproject">Add Project</Button>
         }
       </Box>
       <ProjectTable />
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-          <Box sx={style}>
-            <ProjectStepper/>
-          </Box>
-      </Modal>
     </Container>
   );
 };
