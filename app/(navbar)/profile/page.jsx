@@ -12,7 +12,7 @@ const page = () => {
     const [user, setUser] = useState();
 
     useEffect(()=>{
-        axiosInstance.get("/api/v1/users/by-id?id=" + Cookies.get("userId"))
+        axiosInstance.get("/api/v1/users/profile")
         .then((res) => {setUser(res.data[0])})
     },[])
 

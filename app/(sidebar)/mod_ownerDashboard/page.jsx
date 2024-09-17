@@ -108,7 +108,7 @@ const page = () => {
       <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Projects" />
+          <Tab label="Second Assessor Allocation" />
           <Tab label="Another Tab" />
         </Tabs>
       </Box>
@@ -119,7 +119,7 @@ const page = () => {
       <Grid container spacing={6}>
         {/* Projects List (Left side) */}
         <Grid item xs={4}>
-          <Typography variant="h6">Available Projects</Typography>
+          <Typography variant="h6">Allocated Projects</Typography>
           <List>
             {projects.map((project) => (
               <ListItem key={project.projectId} disablePadding>

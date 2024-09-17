@@ -13,8 +13,6 @@ export const metadata = {
   title: "MSc Project Administrator",
 };
 
-const cookieStore = cookies();
-
 const RootLayout = ({ children }) => {
   return (
     <html lang="en">
