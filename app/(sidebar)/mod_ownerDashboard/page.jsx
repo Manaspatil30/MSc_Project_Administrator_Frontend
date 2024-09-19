@@ -6,8 +6,9 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import axiosInstance from '@utils/axios';
-import { Autocomplete, Button, Checkbox, Grid, List, ListItem, ListItemText, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Autocomplete, Button, Checkbox, Grid, List, ListItem, ListItemText, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import StudentPreferences from '@components/StudentPreferences';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -42,7 +43,8 @@ const page = () => {
   const [projects, setProjects] = useState([]); // Store projects data
   const [selectedProject, setSelectedProject] = useState(null); // Store selected project
   const [supervisors, setSupervisors] = useState([]); // Store supervisor list
-  const [selectedSupervisor, setSelectedSupervisor] = useState(null); // Store selected supervisor
+  const [selectedSupervisor, setSelectedSupervisor] = useState(); // Store selected supervisor
+  const [projectsWithAssessors, setProjectsWithAssessors] = useState([]);
   
     const handleChange = (event, newValue) => {
       setValue(newValue);
@@ -52,8 +54,10 @@ const page = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axiosInstance.get("/api/v1/modowner/assignedProjects"); // Mock API for projects
-        setProjects(response.data);
+        const responseWithoutAssessor = await axiosInstance.get("/api/v1/modowner/assignedProjects");
+        const responseWithAssessor = await axiosInstance.get("/api/v1/modowner/projectsWithAssessors")
+        setProjects(responseWithoutAssessor.data);
+        setProjectsWithAssessors(responseWithAssessor.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -77,7 +81,8 @@ const page = () => {
       // Deselect the project if it's already selected
       setSelectedProject(null);
       setSupervisors([]); // Clear supervisors list
-      setSelectedSupervisor(null); // Clear selected supervisor
+      // @ts-ignore
+      setSelectedSupervisor(); // Clear selected supervisor
     } else {
       // Select the project
       setSelectedProject(project);
@@ -95,6 +100,7 @@ const page = () => {
     try {
       await axiosInstance.post("/api/v1/project-assessment/assignProjectForAssessment", {
         projectId: selectedProject.projectId,
+        // @ts-ignore
         supervisorId: selectedSupervisor.userId,
       });
       alert("Project successfully assigned to the supervisor");
@@ -115,58 +121,107 @@ const page = () => {
       
       {/* Projects Tab */}
       <CustomTabPanel value={value} index={0}>
-      <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Grid container spacing={6}>
-        {/* Projects List (Left side) */}
-        <Grid item xs={4}>
-          <Typography variant="h6">Allocated Projects</Typography>
-          <List>
-            {projects.map((project) => (
-              <ListItem key={project.projectId} disablePadding>
-                <Checkbox
-                  edge="start"
-                  checked={selectedProject?.projectId === project.projectId}
-                  disabled={selectedProject && selectedProject.projectId !== project.projectId}
-                  onChange={() => handleProjectSelect(project)}
-                />
-                <ListItemText
-                  primary={project.title}
-                  secondary={`Description: ${project.description}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
-
-        {/* Supervisor Selection (Right side) */}
-        <Grid item xs={6}>
-          {selectedProject && (
-            <Box>
-              <Typography variant="h6">Assign Supervisor for {selectedProject.title}</Typography>
-              
-              <Autocomplete
-                options={supervisors}
-                getOptionLabel={(option) => `${option.firstname} ${option.lastname}`}
-                value={selectedSupervisor}
-                onChange={handleSupervisorSelect}
-                renderInput={(params) => <TextField {...params} label="Select Supervisor" />}
-                isOptionEqualToValue={(option, value) => option.userId === value.userId}
-              />
-
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={assignProject}
-                disabled={!selectedSupervisor}
-                sx={{ mt: 2 }}
-              >
-                Assign Supervisor
-              </Button>
-            </Box>
-          )}
-        </Grid>
-      </Grid>
-    </Box>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+          <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Select</TableCell>
+                  <TableCell>Project Title</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Students</TableCell>
+                  <TableCell>Supervisor</TableCell>
+                  <TableCell>Assign Second Assessor</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {projects.map((project) => (
+                  <TableRow key={project.projectId}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedProject?.projectId === project.projectId}
+                        disabled={selectedProject && selectedProject.projectId !== project.projectId}
+                        onChange={() => handleProjectSelect(project)}
+                      />
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {project.title}
+                    </TableCell>
+                    <TableCell>{project.description}</TableCell>
+                    <TableCell>
+                      {project.students.map(student => (
+                        <div key={student.userId}>
+                          {student.firstname} {student.lastname}
+                        </div>
+                      ))}
+                    </TableCell>
+                    <TableCell>{project.supervisor ? `${project.supervisor.firstname} ${project.supervisor.lastname}` : "N/A"}</TableCell>
+                    <TableCell>
+                      <Autocomplete
+                        options={supervisors}
+                        getOptionLabel={(option) => `${option.firstname} ${option.lastname}`}
+                        value={selectedSupervisor}
+                        onChange={(event, newValue) => handleSupervisorSelect(project.projectId, newValue)}
+                        renderInput={(params) => <TextField {...params} label="Select Assessor" />}
+                        isOptionEqualToValue={(option, value) => option.userId === value.userId}
+                        disabled={selectedProject && selectedProject.projectId !== project.projectId}// Disable if already assigned
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => assignProject()}
+                        disabled={selectedProject && selectedProject.projectId !== project.projectId}
+                      >
+                        Assign
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {/* Projects with Assessors Table */}
+          <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Projects With Assessors</Typography>
+          <TableContainer component={Paper}>
+            <Table aria-label="projects with assessors">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Project Title</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Students</TableCell>
+                  {/* <TableCell>Supervisor</TableCell> */}
+                  <TableCell>Assessor</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {projectsWithAssessors.map((project) => (
+                  <TableRow key={project.projectId}>
+                    <TableCell component="th" scope="row">
+                      {project.title}
+                    </TableCell>
+                    <TableCell>{project.description}</TableCell>
+                    <TableCell>
+                      {project.students ? (
+                        project.students.map(student => (
+                          <div key={student.userId}>
+                            {student.firstname} {student.lastname}
+                          </div>
+                        ))
+                      ) : 'No Students Assigned'}
+                    </TableCell>
+                    {/* <TableCell>{project.supervisor ? `${project.supervisor.firstname} ${project.supervisor.lastname}` : "N/A"}</TableCell> */}
+                    <TableCell>
+                      {project.assessor ? `${project.assessor.firstname} ${project.assessor.lastname}` : "No Assessor Assigned"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </CustomTabPanel>
       
       {/* Placeholder for another tab */}
