@@ -1,6 +1,7 @@
 "use client"
 import StudentProjectWidget from '@components/StudentProjectWidget'
 import SupervisorStudentsWidget from '@components/SupervisorStudentsWidget'
+import SupStudentSelect from '@components/SupStudentSelect'
 import { Typography } from '@mui/material'
 import Cookies from 'js-cookie'
 import router from 'next/router'
@@ -48,7 +49,9 @@ const page = () => {
           <StudentProjectWidget/>
       }
       {userRole == 'ACADEMIC' && 
+      <>
           <SupervisorStudentsWidget/>
+      </>
       }
     </>
   )

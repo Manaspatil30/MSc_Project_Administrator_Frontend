@@ -212,7 +212,7 @@ const page = () => {
                         ))
                       ) : 'No Students Assigned'}
                     </TableCell>
-                    {/* <TableCell>{project.supervisor ? `${project.supervisor.firstname} ${project.supervisor.lastname}` : "N/A"}</TableCell> */}
+                    {/* <TableCell>{project.supervisor ; `${project.supervisor.firstname} ${project.supervisor.lastname}` : "N/A"}</TableCell> */}
                     <TableCell>
                       {project.assessor ? `${project.assessor.firstname} ${project.assessor.lastname}` : "No Assessor Assigned"}
                     </TableCell>

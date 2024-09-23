@@ -5,6 +5,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -35,6 +36,12 @@ const Login = () => {
         router.push('/mod_ownerDashboard')
       } else {
         router.push('/dashboard')
+      }
+    }).catch((err) => {
+      if (err.response && err.response.status === 401) {
+        toast.error('Wrong username or password');
+      } else {
+        console.log("Login Error", err);
       }
     })
   };

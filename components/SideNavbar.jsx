@@ -65,6 +65,14 @@ const SideNavbar = ({children}) => {
         { title: "Dashboard", href: "/mod_ownerDashboard" },
         { title: "Projects", href: "/projects" }
       ]);
+    } else if (role === 'ACADEMIC') {
+      setList([
+        { title: "Dashboard", href: "/dashboard" },
+        { title: "Projects", href: "/projects" },
+        {title: "Select Students", href : "/studentPref"},
+        { title: "Sessions", href: "/session" },
+        { title: "Feedback", href: "/feedback" }
+      ]);
     } else {
       setList([
         { title: "Dashboard", href: "/dashboard" },

@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Checkbox, Chip, Drawer, FormControl, Grid, IconButton, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Checkbox, Chip, Drawer, FormControl, Grid, IconButton, InputLabel, ListItemText, MenuItem, Modal, OutlinedInput, Select, TextField, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const MenuProps = {
   PaperProps: {
@@ -24,24 +25,39 @@ const MenuProps = {
   },
 };
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  borderRadius: '8px',
+};
+
 const columns = [
-  { id: 'name', label: 'Title', minWidth: 170 },
-  { id: 'code', label: 'Project Id', minWidth: 100 },
+  { id: 'propjectId', label: 'Project Id', minWidth: 100 },
+  { id: 'title', label: 'Title', minWidth: 170 },
   {
-    id: 'population',
+    id: 'status',
     label: 'Status',
     minWidth: 170,
     align: "right",
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'size',
+    id: 'supervisor',
     label: 'Supervisor',
     minWidth: 170,
     align: "right",
     format: (value) => value.toLocaleString('en-US'),
   },
-  { id: 'actions', label: '', minWidth: 100, align: "right" },
+  {
+    id: 'actions', label: 'Action', minWidth: 100, align: "right"
+  },
+  { id: 'add', label: '', minWidth: 100, align: "right" },
 ];
 
 
@@ -58,11 +74,26 @@ const ProjectTable = () => {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userRole, setUserRole] = useState();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null); // State to hold the selected project
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(()=>{
     // @ts-ignore
     setUserRole(Cookies.get('user_role'))
   },[])
+
+  // Handle opening the modal
+  const handleOpenModal = (project) => {
+    setSelectedProject(project);
+    setModalOpen(true);
+  };
+
+  // Handle closing the modal
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+    setModalOpen(false);
+  };
   
 
   const toggleDrawer = (open) => (event) => {
@@ -136,7 +167,7 @@ const ProjectTable = () => {
 
   const handleAddProject = (project) => {
     if (selectedProjects.length < 5) {
-      setSelectedProjects([...selectedProjects, { ...project, preference: selectedProjects.length + 1 }]);
+      setSelectedProjects([...selectedProjects, { ...project, preference: selectedProjects.length + 1, answers: [] }]);
     } else {
       alert("You can only select up to 5 projects.");
     }
@@ -169,11 +200,46 @@ const ProjectTable = () => {
     }
   };
 
+  const handleAnswerChange = (projectId, questionId, answer) => {
+    setSelectedProjects(prevProjects => prevProjects.map(proj => {
+      if (proj.supProjectId === projectId) {
+        const updatedAnswers = proj.answers.map(ans =>
+          ans.questionId === questionId ? { ...ans, answer } : ans
+        );
+        return { ...proj, answers: updatedAnswers };
+      }
+      return proj;
+    }));
+  };
+
+  const validateAnswers = () => {
+    // Ensure all questions are answered for projects with questions
+    for (let proj of selectedProjects) {
+      if (proj.questions && proj.questions.length > 0) {
+        for (let question of proj.questions) {
+          const answer = proj.answers.find(ans => ans.questionId === question.questionId);
+          if (!answer || !answer.answer) {
+            return false; // Missing answer
+          }
+        }
+      }
+    }
+    return true; // All questions answered
+  };
+
+
   const handleSubmitPreferences = () => {
+
+    if (!validateAnswers()) {
+      setAlertVisible(true); // Show alert if answers are missing
+      return;
+    }
+
     const payload = {
       projectPreferences: selectedProjects.map(proj => ({
         projectId: proj.projectId,
         preference: proj.preference,
+        answers: proj.answers.length > 0 ? proj.answers : undefined
       })),
     };
 
@@ -194,6 +260,7 @@ const ProjectTable = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  
   return (
     <Box>
       {/* Filter */}
@@ -304,16 +371,21 @@ const ProjectTable = () => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.supProjectId}>
                     <TableCell>
-                      {row.title}
+                      {row.supProjectId}
                     </TableCell>
                     <TableCell>
-                      {row.supProjectId}
+                      {row.title}
                     </TableCell>
                     <TableCell align='right'>
                       {row.status}
                     </TableCell>
                     <TableCell align='right'>
                       {row.supervisor.firstname}
+                    </TableCell>
+                    <TableCell align='right'>
+                      <Button variant="outlined" onClick={() => handleOpenModal(row)}>
+                        View Details
+                      </Button>
                     </TableCell>
                     {
                       Cookies.get('user_role') == 'STUDENT' ? 
@@ -342,6 +414,57 @@ const ProjectTable = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>
+    {/* Modal for showing project details */}
+    <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="project-details-modal"
+        aria-describedby="project-details-description"
+      >
+        <Box sx={style}>
+          <Typography id="project-details-modal" variant="h6" component="h2">
+            {selectedProject?.title}
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 2 }}>
+            Project ID: {selectedProject?.supProjectId}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Description:</strong> {selectedProject?.description}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Status:</strong> {selectedProject?.status}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Supervisor:</strong> {selectedProject?.supervisor.firstname} {selectedProject?.supervisor.lastname} ({selectedProject?.supervisor.email})
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Quota:</strong> {selectedProject?.quota}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Programs:</strong> 
+            <ul>
+              {selectedProject?.programes.map(program => (
+                <li key={program.programId}>{program.title}</li>
+              ))}
+            </ul>
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            <strong>Questions:</strong>
+            {selectedProject?.questions && selectedProject?.questions.length > 0 ? (
+              <ul>
+                {selectedProject.questions.map(question => (
+                  <li key={question.questionId}>{question.questionText}</li>
+                ))}
+              </ul>
+            ) : (
+              <Typography>No questions available for this project.</Typography>
+            )}
+          </Typography>
+          <Button variant="contained" onClick={handleCloseModal} sx={{ mt: 2 }}>
+            Close
+          </Button>
+        </Box>
+      </Modal>
 
     {
       userRole == 'STUDENT' &&
@@ -359,52 +482,88 @@ const ProjectTable = () => {
         {drawerOpen ? 'Close Preferences' : 'Open Preferences'}
       </Button>
       <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-        variant="persistent" // Make it persistent to create an accordion-like effect
-        sx={{
-          width: drawerOpen ? 350 : 60, // Control width based on state (like an accordion)
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerOpen ? 350 : 60,
-            transition: 'width 0.3s', // Smooth transition for the sliding effect
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            height: '100%',
-            zIndex: 1100,
-          },
-        }}
-      >
-    <Box sx={{ width: '100%', p: 2 }}>
-        <Typography variant="h6">Selected Projects</Typography>
-        {selectedProjects.map((project, index) => (
-          <Paper key={project.supProjectId} sx={{ p: 2, mb: 1 }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="body1">{project.title}</Typography>
-                <Chip label={`Preference: ${project.preference}`} />
-              </Box>
-              <Box>
-                <IconButton onClick={() => moveProjectUp(index)} disabled={index === 0}>
-                  <ArrowUpwardIcon />
-                </IconButton>
-                <IconButton onClick={() => moveProjectDown(index)} disabled={index === selectedProjects.length - 1}>
-                  <ArrowDownwardIcon />
-                </IconButton>
-                <IconButton onClick={() => handleRemoveProject(project.supProjectId)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
+            anchor="right"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            variant="persistent"
+            sx={{
+              width: drawerOpen ? 350 : 60,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerOpen ? 350 : 60,
+                transition: 'width 0.3s',
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                height: '100%',
+                zIndex: 1100,
+              },
+            }}
+          >
+            <Box sx={{ width: '100%', p: 2, marginTop:'20%' }}>
+              <Typography variant="h6">Selected Projects</Typography>
+              {selectedProjects.map((project, index) => (
+                <Accordion key={project.supProjectId}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                      <Box>
+                        <Typography variant="body1">{project.title}</Typography>
+                        <Chip label={`Preference: ${project.preference}`} />
+                      </Box>
+                      <Box>
+                        <IconButton onClick={(event) => {
+                          event.stopPropagation();
+                          moveProjectUp(index);
+                          }} disabled={index === 0}>
+                          <ArrowUpwardIcon />
+                        </IconButton>
+                        <IconButton onClick={(event) => {
+                          event.stopPropagation();
+                          moveProjectDown(index);
+                          }} disabled={index === selectedProjects.length - 1}>
+                          <ArrowDownwardIcon />
+                        </IconButton>
+                        <IconButton onClick={(event) => {
+                          event.stopPropagation();
+                          handleRemoveProject(project.supProjectId)
+                          }}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {project.questions && project.questions.length > 0 ? (
+                      project.questions.map(question => (
+                        <Box key={question.questionId} mb={2}>
+                          <Typography>{question.questionText}</Typography>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            placeholder="Your answer"
+                            onChange={e => handleAnswerChange(project.supProjectId, question.questionId, e.target.value)}
+                          />
+                        </Box>
+                      ))
+                    ) : (
+                      <Typography>No questions for this project.</Typography>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+              <Button variant="contained" color="primary" onClick={handleSubmitPreferences} disabled={selectedProjects.length !== 5}>
+                Submit Preferences
+              </Button>
+
+              {alertVisible && (
+                <Alert severity="error" sx={{ mt: 2 }} onClose={() => setAlertVisible(false)}>
+                  Please answer all the questions before submitting your preferences.
+                </Alert>
+              )}
+              
             </Box>
-          </Paper>
-        ))}
-        <Button variant="contained" color="primary" onClick={handleSubmitPreferences} disabled={selectedProjects.length !== 5}>
-          Submit Preferences
-        </Button>
-      </Box>
-      </Drawer>
+          </Drawer>
       </>
   }
     </Box>
