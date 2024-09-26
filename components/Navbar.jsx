@@ -3,12 +3,14 @@ import { AppBar, Avatar, Box, CssBaseline, IconButton, Menu, MenuItem, Toolbar, 
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
+import axiosInstance from '@utils/axios';
 
 const settings = ['Profile', 'Logout']; 
 
 const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -30,6 +32,11 @@ const Navbar = () => {
     }
   }, []);
 
+  useEffect(()=>{
+    axiosInstance.get("/api/v1/users/profile")
+    .then((res) => {setUser(res.data)})
+},[])
+
   return (
     <Box display={'flex'} width={'auto%'}>
         <CssBaseline />
@@ -38,15 +45,24 @@ const Navbar = () => {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          <Typography fontWeight={'700'} width={'100%'}>
+          
+          <Typography component={Link} href={"/"} fontWeight={'700'} width={'100%'}>
             MSc Project Administrator
           </Typography>
+
           <Box sx={{ flexGrow: 0, 
-            display:'flex', justifyContent:'end', width:'100%' 
+            display:'flex', justifyContent:'end', alignItems:'center', width:'100%' 
             }}>
+              <Typography fontWeight={'700'} marginRight={5}>
+                {
+                  user && 
+                  // @ts-ignore
+                  "Hello, " + user.firstname + " " + user.lastname
+                }
+              </Typography>
               {
                 isAuthenticated && 
-            <Tooltip title="Open settings">
+            <Tooltip title="Open" >
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar />
               </IconButton>

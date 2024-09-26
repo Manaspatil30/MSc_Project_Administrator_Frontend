@@ -126,7 +126,15 @@ const SupStudentSelect = () => {
       {/* Pending Preferences Section */}
       {tabValue === 0 && (
         <Box>
-          {projects.map((project, projectIndex) => (
+          {
+            projects.length == 0 ? 
+            <>
+            <Box display={'flex'} alignItems={'center'} width={'100%'}>
+            <Typography marginTop={10}>There are no pending preferences</Typography>
+            </Box>
+            </>
+            :
+          projects.map((project, projectIndex) => (
             <Accordion key={project.projectId}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="h6">{project.title}</Typography>

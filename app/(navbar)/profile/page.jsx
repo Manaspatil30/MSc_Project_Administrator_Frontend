@@ -4,6 +4,7 @@ import SettingsCard from '@components/SettingsCard';
 import { Grid } from '@mui/material';
 import axiosInstance from '@utils/axios';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const page = () => {
@@ -11,9 +12,15 @@ const page = () => {
     const [text, setText] = useState("");
     const [user, setUser] = useState();
 
+    const router = useRouter();
+
+  if(!Cookies.get('token')){
+    router.push('/login')
+  }
+
     useEffect(()=>{
         axiosInstance.get("/api/v1/users/profile")
-        .then((res) => {setUser(res.data[0])})
+        .then((res) => {setUser(res.data)})
     },[])
 
     console.log("User Details",user)

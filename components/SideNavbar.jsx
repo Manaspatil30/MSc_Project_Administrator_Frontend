@@ -63,7 +63,8 @@ const SideNavbar = ({children}) => {
     if (role === 'MOD_OWNER') {
       setList([
         { title: "Dashboard", href: "/mod_ownerDashboard" },
-        { title: "Projects", href: "/projects" }
+        { title: "Projects", href: "/projects" },
+        {title: "Add Users", href : "/addUsers"}
       ]);
     } else if (role === 'ACADEMIC') {
       setList([
@@ -71,14 +72,12 @@ const SideNavbar = ({children}) => {
         { title: "Projects", href: "/projects" },
         {title: "Select Students", href : "/studentPref"},
         { title: "Sessions", href: "/session" },
-        { title: "Feedback", href: "/feedback" }
       ]);
     } else {
       setList([
         { title: "Dashboard", href: "/dashboard" },
         { title: "Projects", href: "/projects" },
         { title: "Sessions", href: "/session" },
-        { title: "Feedback", href: "/feedback" }
       ]);
     }
   }, []);

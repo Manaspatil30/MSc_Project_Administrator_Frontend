@@ -81,7 +81,7 @@ export default function SettingsCard(props) {
                 item
                 xs={6}
               >
-                {
+                {/* {
                     disabled ? 
                 <Button
                   sx={{ p: "1rem 2rem", my: 2, height: "3rem" }}
@@ -104,7 +104,7 @@ export default function SettingsCard(props) {
                 >
                   Update
                 </Button>
-                }
+                } */}
               </Grid>
             </Grid>
             </CardContent>

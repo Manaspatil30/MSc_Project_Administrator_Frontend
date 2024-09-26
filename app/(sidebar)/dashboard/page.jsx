@@ -1,9 +1,13 @@
 "use client"
 import StudentProjectWidget from '@components/StudentProjectWidget'
+import StudentUpcomingSessionWidget from '@components/StudentUpcomingSessionWidget'
+import SupervisorProjectsWidget from '@components/SupervisorProjectsWidget'
 import SupervisorStudentsWidget from '@components/SupervisorStudentsWidget'
+import SupervisorUpcomingSessionWidget from '@components/SupervisorUpcomingSessionWidget'
 import SupStudentSelect from '@components/SupStudentSelect'
-import { Typography } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 import Cookies from 'js-cookie'
+import { useRouter } from 'next/navigation'
 import router from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Bounce, toast, ToastContainer } from 'react-toastify'
@@ -11,6 +15,11 @@ import { Bounce, toast, ToastContainer } from 'react-toastify'
 const page = () => {
   const handleToast = () => {toast.success("Success")}
   const [userRole , setUserRole] = useState();
+  const router = useRouter();
+
+  if(!Cookies.get('token')){
+    router.push('/login')
+  }
 
   useEffect(()=>{
     // @ts-ignore
@@ -46,11 +55,24 @@ const page = () => {
       </Typography>
       {
         userRole == 'STUDENT' && 
+        <>
           <StudentProjectWidget/>
+          <Grid container>
+        <Grid item xs={5} mt={3}>
+        <StudentUpcomingSessionWidget/>
+        </Grid>
+      </Grid>
+        </>
       }
       {userRole == 'ACADEMIC' && 
       <>
-          <SupervisorStudentsWidget/>
+      <SupervisorStudentsWidget/>
+      <SupervisorProjectsWidget/>
+      <Grid container>
+        <Grid item xs={5} mt={3}>
+        <SupervisorUpcomingSessionWidget/>
+        </Grid>
+      </Grid>
       </>
       }
     </>

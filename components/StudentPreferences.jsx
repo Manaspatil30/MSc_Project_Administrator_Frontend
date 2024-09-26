@@ -20,9 +20,11 @@ import axiosInstance from "@utils/axios";
 const StudentPreferences = () => {
   const [studentsWithPreferences, setStudentsWithPreferences] = useState([]); // Store student preferences
   const [studentsWithoutPreferences, setStudentsWithoutPreferences] = useState([]); // Store students without preference
+  const [studentWithProject, setStudentWithProject] = useState([]); // Store students with allocated projects
   const [remainingCount, setRemainingCount] = useState(0); // Store remaining students count
   const [searchQuery, setSearchQuery] = useState(''); // Search query
   const [remainingSearchQuery, setRemainingSearchQuery] = useState(''); // Search query
+  const [allocatedSearchQuery, setAllocatedSearchQuery] = useState('');
 
   // Fetch student preferences data
   useEffect(() => {
@@ -31,6 +33,7 @@ const StudentPreferences = () => {
         const response = await axiosInstance.get("/api/student-choices/mod-owner/preferences-status");
         setStudentsWithPreferences(response.data.studentChoices);
         setStudentsWithoutPreferences(response.data.studentsWithoutPreferences);
+        setStudentWithProject(response.data.studentsWithAllocatedProjects);
         setRemainingCount(response.data.remainingCount);
       } catch (error) {
         console.error("Error fetching student preferences:", error);
@@ -38,6 +41,12 @@ const StudentPreferences = () => {
     };
     fetchStudentPreferences();
   }, []);
+
+  const filteredStudentsWithAllocatedProjects = studentWithProject.filter((student) =>
+    `${student.firstname} ${student.lastname}`
+      .toLowerCase()
+      .includes(allocatedSearchQuery.toLowerCase())
+  );
 
   const filteredStudents = studentsWithPreferences.filter((studentChoice) =>
     `${studentChoice.student.firstname} ${studentChoice.student.lastname}`
@@ -185,6 +194,50 @@ const StudentPreferences = () => {
           </AccordionDetails>
         </Accordion>
       ))}
+
+      {/* Students with Allocated Projects Section */}
+      <Grid container alignItems="center" sx={{ mt: 3, mb: 2 }}>
+        <Grid item xs={6}>
+          <Typography variant="h6">Students with Allocated Projects</Typography>
+        </Grid>
+        <Grid item xs={6} mb={2}>
+          <TextField
+            label="Search Students"
+            variant="outlined"
+            fullWidth
+            value={allocatedSearchQuery}
+            onChange={(e) => setAllocatedSearchQuery(e.target.value)}
+          />
+        </Grid>
+      </Grid>
+
+      {filteredStudentsWithAllocatedProjects.length > 0 ?
+        filteredStudentsWithAllocatedProjects.map((student) => (
+          <Accordion key={student.studentId}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={`panel-allocated-${student.studentId}-content`}
+              id={`panel-allocated-${student.studentId}-header`}
+            >
+              <Typography>
+                {student.firstname} {student.lastname} ({student.email}) - Allocated
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="subtitle1">Allocated Project:</Typography>
+              <List>
+                <ListItem>
+                  <ListItemText
+                    primary={`Project Title: ${student.allocatedProject.projectTitle}`}
+                  />
+                </ListItem>
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        )) : (
+          <Typography>No students with allocated projects found.</Typography>
+        )
+      }
     </Box>
   );
 };

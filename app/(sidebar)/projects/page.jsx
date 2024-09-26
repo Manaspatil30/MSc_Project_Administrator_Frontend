@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import axiosInstance from "@utils/axios";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const style = {
@@ -48,6 +49,12 @@ const page = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [isClient, setIsClient] = useState(false); // New state for client-side rendering
+
+  const router = useRouter();
+
+  if(!Cookies.get('token')){
+    router.push('/login')
+  }
 
   useEffect(() => {
     setIsClient(true); // Set to true once on the client

@@ -24,6 +24,8 @@ const StudentProjectWidget = () => {
       });
   }, []);
 
+  console.log("Response",projectData);
+
   if (loading) {
     return <Typography>Loading...</Typography>;
   }
@@ -119,7 +121,7 @@ const StudentProjectWidget = () => {
         </Grid>
       </Grid>
     </Paper>
-    <Paper elevation={3} sx={{ p: 3, width: '100%', marginTop:'1rem' }}>
+    {/* <Paper elevation={3} sx={{ p: 3, width: '100%', marginTop:'1rem' }}>
       <Typography variant="h5" gutterBottom>
       Submission Deadlines
       </Typography>
@@ -138,7 +140,7 @@ const StudentProjectWidget = () => {
       <Typography variant="h5" gutterBottom>
       Resources
       </Typography>
-    </Paper>
+    </Paper> */}
     </>
   );
 };

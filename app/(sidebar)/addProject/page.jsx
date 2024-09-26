@@ -2,7 +2,7 @@
 import { Box, Button, Checkbox, Chip, FormControl, Grid, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField, useTheme } from '@mui/material'
 import axiosInstance from '@utils/axios';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Bounce, toast, ToastContainer } from 'react-toastify';
 
@@ -78,6 +78,12 @@ const page = () => {
   const [prerequisite, setPrerequisite] = useState("");
   const [quota, setQuota] = useState();
   const [reference, setReference] = useState("");
+
+  const router = useRouter();
+
+  if(!Cookies.get('token')){
+    router.push('/login')
+  }
 
   const isStepOptional = (step) => {
     return step === 1;

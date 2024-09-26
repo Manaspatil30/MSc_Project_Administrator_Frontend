@@ -9,6 +9,9 @@ import axiosInstance from '@utils/axios';
 import { Autocomplete, Button, Checkbox, Grid, List, ListItem, ListItemText, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import StudentPreferences from '@components/StudentPreferences';
 import axios from 'axios';
+import Allocate from '@components/Allocate';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -45,6 +48,12 @@ const page = () => {
   const [supervisors, setSupervisors] = useState([]); // Store supervisor list
   const [selectedSupervisor, setSelectedSupervisor] = useState(); // Store selected supervisor
   const [projectsWithAssessors, setProjectsWithAssessors] = useState([]);
+
+  const router = useRouter();
+
+  if(!Cookies.get('token')){
+    router.push('/login')
+  }
   
     const handleChange = (event, newValue) => {
       setValue(newValue);
@@ -114,13 +123,24 @@ const page = () => {
       <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Preference Status" />
           <Tab label="Second Assessor Allocation" />
-          <Tab label="Another Tab" />
+          <Tab label="Allocate Projects"/>
         </Tabs>
       </Box>
+
+      {/* Preference Status */}
+      <CustomTabPanel value={value} index={0}>
+        <StudentPreferences/>
+      </CustomTabPanel>
+
+      {/*Allocate Project */}
+      <CustomTabPanel value={value} index={2}>
+        <Allocate/>
+      </CustomTabPanel>
       
       {/* Projects Tab */}
-      <CustomTabPanel value={value} index={0}>
+      <CustomTabPanel value={value} index={1}>
         <Box sx={{ flexGrow: 1, p: 3 }}>
           <TableContainer component={Paper}>
             <Table aria-label="simple table">
@@ -223,11 +243,7 @@ const page = () => {
           </TableContainer>
         </Box>
       </CustomTabPanel>
-      
-      {/* Placeholder for another tab */}
-      <CustomTabPanel value={value} index={1}>
-        <StudentPreferences/>
-      </CustomTabPanel>
+
     </Box>
     );
 }

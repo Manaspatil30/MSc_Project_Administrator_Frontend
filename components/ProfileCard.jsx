@@ -45,17 +45,17 @@ export default function ProfileCard(props) {
 
         {/* DETAILS */}
         <Grid container>
-          <Grid item xs={3}>
+          {/* <Grid item xs={3}>
             <Typography style={styles.details}>Supervisor </Typography>
             <Typography style={styles.details}>Project</Typography>
             <Typography style={styles.details}>Course</Typography>
-          </Grid>
+          </Grid> */}
           {/* VALUES */}
-          <Grid item xs={9} sx={{ textAlign: "end", overflow:'hidden' }}>
+          {/* <Grid item xs={9} sx={{ textAlign: "end", overflow:'hidden' }}>
             <Typography style={styles.value}>Dr Shun ha Sylvia Wong</Typography>
             <Typography style={styles.value}>Msc Project Administrator</Typography>
             <Typography style={styles.value}>Msc Computer Science</Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         {/* BUTTON */}

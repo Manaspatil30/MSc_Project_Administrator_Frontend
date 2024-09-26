@@ -15,6 +15,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { toast } from 'react-toastify';
 
 const MenuProps = {
   PaperProps: {
@@ -77,6 +78,19 @@ const ProjectTable = () => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null); // State to hold the selected project
   const [modalOpen, setModalOpen] = useState(false);
+  const [projectAsssigned, setProjectAssigned] = useState(false);
+  const [user, setUser] = useState();
+
+  useEffect(()=>{
+    axiosInstance.get("/api/v1/users/profile")
+    .then((res) => {
+      if(res.data.assignedProject == null){
+        setProjectAssigned(false);
+      }else{
+        setProjectAssigned(true);
+      }
+    })
+  },[])
 
   useEffect(()=>{
     // @ts-ignore
@@ -230,10 +244,10 @@ const ProjectTable = () => {
 
   const handleSubmitPreferences = () => {
 
-    if (!validateAnswers()) {
-      setAlertVisible(true); // Show alert if answers are missing
-      return;
-    }
+    // if (!validateAnswers()) {
+    //   setAlertVisible(true); // Show alert if answers are missing
+    //   return;
+    // }
 
     const payload = {
       projectPreferences: selectedProjects.map(proj => ({
@@ -259,6 +273,22 @@ const ProjectTable = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleRequestTasterSession = async () => {
+    try {
+      const payload = {
+        studentId: Cookies.get('userId'), // Assuming the student's ID is stored in cookies
+        supervisorId: selectedProject.supervisor.userId
+      };
+
+      await axiosInstance.post('/api/taster-sessions/request', payload);
+      toast.success("Taster Session Requested!")
+      handleCloseModal(); // Close modal after successful request
+    } catch (error) {
+      console.error("Error requesting taster session:", error);
+      alert("Failed to request taster session.");
+    }
   };
   
   return (
@@ -380,7 +410,7 @@ const ProjectTable = () => {
                       {row.status}
                     </TableCell>
                     <TableCell align='right'>
-                      {row.supervisor.firstname}
+                      {row.supervisor.firstname + " " + row.supervisor.lastname}
                     </TableCell>
                     <TableCell align='right'>
                       <Button variant="outlined" onClick={() => handleOpenModal(row)}>
@@ -388,7 +418,7 @@ const ProjectTable = () => {
                       </Button>
                     </TableCell>
                     {
-                      Cookies.get('user_role') == 'STUDENT' ? 
+                      Cookies.get('user_role') == 'STUDENT' && projectAsssigned == false ? 
                     <TableCell align='right'>
                       <Button variant="contained" onClick={() => handleAddProject(row)} disabled={selectedProjects.some(proj => proj.supProjectId === row.supProjectId)}>
                         Add
@@ -460,6 +490,16 @@ const ProjectTable = () => {
               <Typography>No questions available for this project.</Typography>
             )}
           </Typography>
+          {userRole === 'STUDENT' && (
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2, mr: 2 }}
+              onClick={handleRequestTasterSession}
+            >
+              Request Taster Session
+            </Button>
+          )}
           <Button variant="contained" onClick={handleCloseModal} sx={{ mt: 2 }}>
             Close
           </Button>

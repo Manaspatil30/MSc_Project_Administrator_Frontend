@@ -9,14 +9,9 @@ import { toast } from 'react-toastify';
 
 
 const Login = () => {
+  console.log("Base URL", process.env.baseUrl);
   const router = useRouter();
-  useEffect(()=>{
-    console.log('Token:', Cookies.get('token')); // Debugging line
-    if(Cookies.get('token')){
-      router.push('/dashboard')
-    }
-    console.log(Cookies.get('token'))
-  },[router])
+  var inOneMinute = new Date(new Date().getTime() + 60 * 1000);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,7 +22,7 @@ const Login = () => {
         password : data.get('password')
       }
     ).then((res) => {
-      Cookies.set('token', res.data.access_token);
+      Cookies.set('token', res.data.access_token,{expires:1});
       Cookies.set('userId', res.data.user.userId);
       Cookies.set('user_role', res.data.user.role);
       console.log('Login successful, redirecting...'); // Debugging line
