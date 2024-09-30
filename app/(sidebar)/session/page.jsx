@@ -1,6 +1,7 @@
 "use client"
 import StudentTasterSessions from '@components/StudentTasterSessions'
 import SupervisorTasterSessions from '@components/SupervisorTasterSessions'
+import { Typography } from '@mui/material'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
@@ -18,6 +19,7 @@ const page = () => {
   
   return (
     <>
+    <Typography variant='h4' fontWeight={700} mb={2}>Taster Sessions</Typography>
     {
       userRole == "STUDENT" && 
       <StudentTasterSessions/>

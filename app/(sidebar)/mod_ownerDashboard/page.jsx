@@ -121,6 +121,7 @@ const page = () => {
   
     return (
       <Box sx={{ width: "100%" }}>
+        <Typography variant='h4' fontWeight={700} mb={2}>Module Owners Dashboard</Typography>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Preference Status" />

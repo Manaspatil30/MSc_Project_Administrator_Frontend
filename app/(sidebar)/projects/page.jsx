@@ -80,9 +80,10 @@ const page = () => {
   return (
     <Container>
       <Box>
+      <Typography variant='h4' fontWeight={700} mb={2}>Projects</Typography>
         {isClient && isSupervisor && 
         <Button variant="contained" href="/addproject">Add Project</Button>
-        }
+        } 
       </Box>
       <ProjectTable />
     </Container>

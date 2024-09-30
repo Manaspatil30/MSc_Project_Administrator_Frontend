@@ -71,13 +71,13 @@ const SideNavbar = ({children}) => {
         { title: "Dashboard", href: "/dashboard" },
         { title: "Projects", href: "/projects" },
         {title: "Select Students", href : "/studentPref"},
-        { title: "Sessions", href: "/session" },
+        { title: "Taster Sessions", href: "/session" },
       ]);
     } else {
       setList([
         { title: "Dashboard", href: "/dashboard" },
         { title: "Projects", href: "/projects" },
-        { title: "Sessions", href: "/session" },
+        { title: "Taster Sessions", href: "/session" },
       ]);
     }
   }, []);

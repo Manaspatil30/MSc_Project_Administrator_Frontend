@@ -45,16 +45,14 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
     <Box
       sx={{
-        marginTop: 8,
+        marginTop: 15,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography component="h1" variant="h5">
+      <img src='https://www.sustainabilitywestmidlands.org.uk/wp-content/uploads/2022/10/0651335001303381167-Aston_University.jpg'/>
+      <Typography component="h1" variant="h4" fontWeight={700}>
         Log in
       </Typography>
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>

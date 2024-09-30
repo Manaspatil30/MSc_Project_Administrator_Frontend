@@ -11,6 +11,10 @@ nextjs-portal {
   display: none;
 }
 
+.navLogo{
+  height: 69px !important;
+}
+
 .main {
   width: 100vw;
   min-height: 100vh;

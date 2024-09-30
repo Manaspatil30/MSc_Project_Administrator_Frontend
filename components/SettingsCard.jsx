@@ -49,7 +49,7 @@ export default function SettingsCard(props) {
                     fullWidth
                     margin="dense"
                     size="small"
-                    name="First Name"
+                    name="Last Name"
                     disabled = {disabled}
                     defaultValue={props.lastName}
                     />
@@ -60,21 +60,21 @@ export default function SettingsCard(props) {
                     fullWidth
                     margin="dense"
                     size="small"
-                    name="First Name"
+                    name="Email"
                     disabled = {disabled}
                     defaultValue={props.email}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                 <label style={{ fontWeight: "bold" }}>Phone number</label>
                     <TextField
                     fullWidth
                     margin="dense"
                     size="small"
-                    name="First Name"
+                    name="Phone"
                     disabled = {disabled}
                     />
-                </Grid>
+                </Grid> */}
                 <Grid
                 container
                 justifyContent={{ xs: "flex-end", md: "flex-end" }}

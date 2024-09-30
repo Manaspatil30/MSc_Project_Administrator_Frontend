@@ -50,7 +50,7 @@ const page = () => {
   }
   return (
     <>
-    <Typography variant="h5" gutterBottom>
+    <Typography fontWeight={700} variant="h5" gutterBottom>
         {renderContent()} Dashboard
       </Typography>
       {

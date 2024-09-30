@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import axiosInstance from '@utils/axios';
 
+
 const settings = ['Profile', 'Logout']; 
 
 const Navbar = () => {
@@ -42,10 +43,10 @@ const Navbar = () => {
         <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor:"#942F9F" }}
       >
         <Toolbar>
-          
+          <img className='navLogo' src={"https://media-speakerfile-pre.s3.amazonaws.com/images_corporation_logos/03969e8f0495df049a4a1eeb43af1d131582744248_l.jpg"} alt={""}/>
           <Typography component={Link} href={"/"} fontWeight={'700'} width={'100%'}>
             MSc Project Administrator
           </Typography>

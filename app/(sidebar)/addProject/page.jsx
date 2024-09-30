@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Checkbox, Chip, FormControl, Grid, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField, useTheme } from '@mui/material'
+import { Box, Button, Checkbox, Chip, FormControl, Grid, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField, Typography, useTheme } from '@mui/material'
 import axiosInstance from '@utils/axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
@@ -232,6 +232,8 @@ const page = () => {
   };
 
   return (
+    <Box>
+      <Typography variant='h4' fontWeight={700} mb={2}>Add Project</Typography>
     <form onSubmit={handleSubmit}>
           <ToastContainer
             position="top-right"
@@ -486,7 +488,8 @@ const page = () => {
                 Submit
               </Button>
               
-        </form>
+    </form>
+    </Box>
   )
 }
 

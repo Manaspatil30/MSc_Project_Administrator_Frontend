@@ -35,7 +35,7 @@ const SupervisorStudentsWidget = () => {
     return (
       <Paper elevation={3} sx={{ p: 3, width: '100%' }}>
         <Typography variant="h5" gutterBottom>
-          Supervised Students
+          Students under Supervision
         </Typography>
         <Typography variant="body1" color="textSecondary">
           There are currently no students assigned to you for supervision.
@@ -47,7 +47,7 @@ const SupervisorStudentsWidget = () => {
   return (
     <Paper elevation={3} sx={{ p: 3, width: '100%' }}>
       <Typography variant="h5" gutterBottom>
-        Supervised Students
+      Students under Supervision
       </Typography>
       <List>
         {students.map((student, index) => (

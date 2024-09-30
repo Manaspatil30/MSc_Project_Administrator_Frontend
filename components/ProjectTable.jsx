@@ -514,9 +514,9 @@ const ProjectTable = () => {
         onClick={toggleDrawer(!drawerOpen)}
         sx={{ 
           position: 'fixed', 
-          right: drawerOpen ? 350 : 60,
+          right: drawerOpen ? 450 : 60,
           transition: 'right 0.3s', 
-          top: '20%', 
+          top: '25%', 
           zIndex: 1200 }} // Fixed position for the toggle button
       >
         {drawerOpen ? 'Close Preferences' : 'Open Preferences'}
@@ -527,10 +527,10 @@ const ProjectTable = () => {
             onClose={() => setDrawerOpen(false)}
             variant="persistent"
             sx={{
-              width: drawerOpen ? 350 : 60,
+              width: drawerOpen ? 450 : 60,
               flexShrink: 0,
               '& .MuiDrawer-paper': {
-                width: drawerOpen ? 350 : 60,
+                width: drawerOpen ? 450 : 60,
                 transition: 'width 0.3s',
                 position: 'fixed',
                 top: 0,
